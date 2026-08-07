@@ -1,7 +1,7 @@
 from datetime import datetime
  
 from pydantic import BaseModel, ConfigDict, Field
- 
+from .sleep_segment import SleepSegment
 from core.enums.types import QualityOfSleep
  
  
@@ -10,6 +10,7 @@ class SleepBase(BaseModel):
     duration: int | None = None
     PSQI: int | None = 0
     quality_of_sleep: QualityOfSleep | None = None
+    
  
  
 class SleepCreate(SleepBase):
@@ -25,3 +26,4 @@ class Sleep(SleepBase):
  
     id: int
     created_at: datetime = Field(default_factory=datetime.now)
+    sleep_segments: list[SleepSegment] = [] 

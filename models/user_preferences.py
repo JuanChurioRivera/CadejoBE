@@ -1,15 +1,15 @@
 from datetime import date, datetime
-
 from pydantic import BaseModel, ConfigDict, Field
 
 from core.enums.types import UserRole
 
-
 class UserBase(BaseModel):
+    email: str 
     name: str | None = None
     dob: date | None = None
     role: UserRole | None = None
     nocturne: bool | None = None
+    
 
 
 class UserCreate(UserBase):
@@ -22,5 +22,6 @@ class User(UserBase):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+    
     updated_at: datetime | None = Field(default_factory=datetime.now)
     created_at: datetime = Field(default_factory=datetime.now)

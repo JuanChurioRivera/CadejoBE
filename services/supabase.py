@@ -4,7 +4,7 @@ from config import config
 from dataclasses import dataclass
 
 @dataclass
-class Supabase:
+class SupabaseClient:
     host = config.supabase_host
     config.supabase_key
     

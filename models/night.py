@@ -1,6 +1,6 @@
 from datetime import datetime, date
 from uuid import UUID
- 
+from .sleep import Sleep
 from pydantic import BaseModel, ConfigDict, Field
  
  
@@ -20,3 +20,5 @@ class Night(NightBase):
     id: int
     date: date
     created_at: datetime = Field(default_factory=datetime.now)
+    
+    sleep: Sleep | None = None
