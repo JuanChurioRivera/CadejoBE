@@ -10,7 +10,6 @@ from models import (
     EventCreate,
     EventBase
 )
-
 from core.enums import Tables
 
 async def get_night_from_user(user_id: int, sb_token:str):
@@ -23,7 +22,7 @@ async def get_night_from_user(user_id: int, sb_token:str):
             .eq('user_id',user_id)
             .execute()
         )
-        nights = [Night.model_validate(row) for row in res.data]
+        nights = [Night.model_validate(**row) for row in res.data]
         return nights
     except Exception:
         raise
@@ -33,7 +32,7 @@ async def create_night(night: NightCreate, sb_token:str):
     
     try:
         res = await client.table(Tables.NIGHT).insert(night.model_dump_json()).execute()
-        return NightBase(**res)
+        return Night(**res.data)
     except Exception:
         raise
     
@@ -46,7 +45,7 @@ async def create_event(event: EventCreate, sb_token:str):
             .insert(event)
             .execute()
         )
-        return EventBase(**res)
+        return Event(**res.data)
     except Exception:
         raise
     
@@ -59,5 +58,7 @@ async def create_event_night(night_event: NightEventCreate, sb_token: str):
             .insert(night_event.model_dump_json())
             .execute()
         )
+        
+        return NightEvent(**res.data)
     except Exception:
         raise
