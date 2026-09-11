@@ -45,7 +45,7 @@ async def create_event(event: EventCreate, sb_token:str):
             .insert(event)
             .execute()
         )
-        return Event(**res.data)
+        return Event(**res.data[0])
     except Exception:
         raise
     
@@ -59,6 +59,6 @@ async def create_event_night(night_event: NightEventCreate, sb_token: str):
             .execute()
         )
         
-        return NightEvent(**res.data)
+        return NightEvent(**res.data[0])
     except Exception:
         raise

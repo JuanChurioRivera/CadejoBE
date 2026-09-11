@@ -11,7 +11,7 @@ from persistence import (
     create_night as client_create_night,
     create_event as client_create_event
 )
-router = APIRouter(prefix="user")
+router = APIRouter(prefix="/user")
 
 @router.get('{user_id}/', status_code=status.HTTP_200_OK)
 async def get_user(user_id: int, auth = Header()):

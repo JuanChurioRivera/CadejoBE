@@ -20,8 +20,7 @@ class UserCreate(UserBase):
 class User(UserBase):
     """Full representation of public.UserPreferences."""
     model_config = ConfigDict(from_attributes=True)
-
-    id: int
     
+    user_id: str
     updated_at: datetime | None = Field(default_factory=datetime.now)
     created_at: datetime = Field(default_factory=datetime.now)
