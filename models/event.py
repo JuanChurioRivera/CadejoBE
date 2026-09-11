@@ -14,6 +14,7 @@ class EventCreate(EventBase):
     custom: bool
     name: str
     description: str | None = None
+    by_user_id: str | None = None
  
  
 class Event(EventBase):

@@ -1,11 +1,10 @@
 from datetime import datetime, date
-from uuid import UUID
 from .sleep import Sleep
 from pydantic import BaseModel, ConfigDict, Field
  
  
 class NightBase(BaseModel):
-    user_id: UUID | None = None
+    user_id: str | None = None
  
  
 class NightCreate(NightBase):
