@@ -47,10 +47,14 @@ async def delete_user(auth = Header()):
 async def get_nights_per_user(auth = Header()):
     user = await client_get_user(auth)
     
+    print(f"user: {user}")
+    
     if not user:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "user not found")
 
     nights = await client_get_night_from_user(auth)
+    
+    print(f"nights: {nights}")
     
     if not nights:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
@@ -104,6 +108,9 @@ async def associate_event_to_night(night_event: NightEventCreate, auth = Header(
 
 @router.get('/nights/{night_id}', status_code=status.HTTP_201_CREATED)
 async def get_events_from_night(night_id: int, auth = Header()):
+    
+    print(f"auth: {auth}")  
+    
     user = await client_get_user(auth)
     
     if not user:

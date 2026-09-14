@@ -19,5 +19,5 @@ class Night(NightBase):
     id: int
     date: date
     created_at: datetime = Field(default_factory=datetime.now)
-    
+    empty: bool | None = True
     sleep: Sleep | None = None
