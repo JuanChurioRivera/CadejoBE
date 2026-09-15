@@ -5,7 +5,7 @@ class QualityOfSleep(str, Enum):
     """Maps to Sleep.quality_of_sleep"""
 
     POOR = "POOR"
-    FAIR = "FAIR"
+    MID = "MID"
     GOOD = "GOOD"
     EXCELLENT = "EXCELLENT"
 

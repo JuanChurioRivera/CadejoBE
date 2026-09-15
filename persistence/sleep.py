@@ -10,19 +10,22 @@ from models import (
 
 from core.enums import Tables
 
-async def get_sleep_per_night(night_id:int, sb_token: str):
+async def get_sleep_from_night(night_id: int, sb_token: str):
     client = await SupabaseClient().auth_client(sb_token)
     
     try:
         res = await (
             client.table(Tables.SLEEP)
-            .select(f"*, {Tables.SLEEP_SEGMENT}(*)")
+            .select("*")
             .eq('night_id',night_id)
             .execute()
         )
-        return SleepBase(**res.data[0])
+        
+        return Sleep.model_validate(res.data[0])
     except Exception:
         raise
+    
+
     
 async def create_sleep(sleep: SleepCreate, sb_token:str):
     client = await SupabaseClient().auth_client(sb_token)
@@ -30,6 +33,21 @@ async def create_sleep(sleep: SleepCreate, sb_token:str):
     try:
         res = await client.table(Tables.SLEEP).insert(sleep.model_dump_json()).execute()
         return SleepBase(**res.data[0])
+    except Exception:
+        raise
+    
+async def get_sleep_segments_from_sleep(sleep_id: int, sb_token: str):
+    client = await SupabaseClient().auth_client(sb_token)
+    
+    try:
+        res = await (
+            client.table(Tables.SLEEP_SEGMENT)
+            .select("*")
+            .eq('sleep_id',sleep_id)
+            .execute()
+        )
+        
+        return [SleepSegment.model_validate(row) for row in res.data]
     except Exception:
         raise
     

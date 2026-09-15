@@ -15,6 +15,8 @@ from persistence import (
     get_events_from_user as client_get_events_from_user,
     associate_event_to_night as client_associate_event_to_night,
     get_events_from_night as client_get_events_from_night,
+    get_sleep_from_night as client_get_sleep_from_night,
+    get_sleep_segments_from_sleep as client_get_sleep_segments_from_sleep,
 )
 router = APIRouter(prefix="/user")
 
@@ -47,14 +49,10 @@ async def delete_user(auth = Header()):
 async def get_nights_per_user(auth = Header()):
     user = await client_get_user(auth)
     
-    print(f"user: {user}")
-    
     if not user:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "user not found")
 
     nights = await client_get_night_from_user(auth)
-    
-    print(f"nights: {nights}")
     
     if not nights:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
@@ -99,8 +97,6 @@ async def get_events(auth = Header()):
 async def associate_event_to_night(night_event: NightEventCreate, auth = Header()):
     user = await client_get_user(auth)
     
-    print("bro wtf")
-    
     if not user:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "user not found")
     
@@ -108,9 +104,7 @@ async def associate_event_to_night(night_event: NightEventCreate, auth = Header(
 
 @router.get('/nights/{night_id}', status_code=status.HTTP_201_CREATED)
 async def get_events_from_night(night_id: int, auth = Header()):
-    
-    print(f"auth: {auth}")  
-    
+     
     user = await client_get_user(auth)
     
     if not user:
@@ -119,10 +113,23 @@ async def get_events_from_night(night_id: int, auth = Header()):
     events = await client_get_events_from_night(night_id, auth)
     
     return True
-    
-         
-    
 
-
+@router.get('/nights/{night_id}/sleep', status_code=status.HTTP_200_OK)
+async def get_sleep_from_night(night_id: int, auth = Header()):
+    user = await client_get_user(auth)
+    
+    if not user:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "user not found")
+    
+    sleep = await client_get_sleep_from_night(night_id, auth)
+    s_segments = await client_get_sleep_segments_from_sleep(sleep.id, auth)
+    sleep.sleep_segments = s_segments
+    
+    print(f"sleep: {sleep}")
+    
+    if not sleep:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "sleep not found")
+    
+    return sleep
 
     

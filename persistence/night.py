@@ -8,7 +8,8 @@ from models import (
     NightEventCreate,
     Event,
     EventCreate,
-    EventBase
+    EventBase,
+    Sleep,
 )
 from core.enums import Tables
 
@@ -131,10 +132,11 @@ async def create_event_night(night_event: NightEventCreate, sb_token: str):
     try:
         res = await (
             client.table(Tables.NIGHT_EVENT)
-            .insert(night_event.model_dump_json())
+            .insert(night_event.model_dump(mode="json"))
             .execute()
         )
         
-        return NightEvent(**res.data[0])
+        return NightEvent.model_validate(res.data[0])
     except Exception:
         raise
+

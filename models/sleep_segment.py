@@ -8,6 +8,8 @@ from core.enums.types import SleepStage
 class SleepSegmentBase(BaseModel):
     idx: int | None = None
     sleep_stage: SleepStage | None = None
+    starts_at: datetime
+    ends_at: datetime
     duration: int | None = None
 
 
