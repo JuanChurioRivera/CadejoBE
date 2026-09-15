@@ -122,7 +122,7 @@ async def get_events_from_night(night_id: int, sb_token: str):
         
         print(f"res.data: {res.data}")
         
-        return True
+        return True 
     except Exception:
         raise
     
