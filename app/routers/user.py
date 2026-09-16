@@ -70,7 +70,7 @@ async def create_night(new_night: NightCreate, auth = Header(),):
         new_night, auth
     )
     
-@router.post('/event', status_code=status.HTTP_201_CREATED)
+@router.post('/events', status_code=status.HTTP_201_CREATED)
 async def create_event(event: EventCreate, auth = Header()):
     user = await client_get_user(auth)
     
@@ -79,7 +79,7 @@ async def create_event(event: EventCreate, auth = Header()):
     
     return await client_create_event(event, auth)
 
-@router.get('/event', status_code=status.HTTP_200_OK)
+@router.get('/events', status_code=status.HTTP_200_OK)
 async def get_events(auth = Header()):
     user = await client_get_user(auth)
     
@@ -93,16 +93,18 @@ async def get_events(auth = Header()):
     
     return events
 
-@router.post('/event/nights', status_code=status.HTTP_201_CREATED)
-async def associate_event_to_night(night_event: NightEventCreate, auth = Header()):
+@router.post('/nights/{night_id}/events', status_code=status.HTTP_201_CREATED)
+async def associate_event_to_night(night_id: int, night_event: NightEventCreate, auth = Header()):
     user = await client_get_user(auth)
-    
+
     if not user:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "user not found")
     
+    night_event.night_id = night_id
+    
     return await client_associate_event_to_night(night_event, auth)
 
-@router.get('/nights/{night_id}', status_code=status.HTTP_201_CREATED)
+@router.get('/nights/{night_id}/events', status_code=status.HTTP_200_OK)
 async def get_events_from_night(night_id: int, auth = Header()):
      
     user = await client_get_user(auth)
@@ -110,9 +112,7 @@ async def get_events_from_night(night_id: int, auth = Header()):
     if not user:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "user not found")
     
-    events = await client_get_events_from_night(night_id, auth)
-    
-    return True
+    return await client_get_events_from_night(night_id, auth)
 
 @router.get('/nights/{night_id}/sleep', status_code=status.HTTP_200_OK)
 async def get_sleep_from_night(night_id: int, auth = Header()):
@@ -124,8 +124,6 @@ async def get_sleep_from_night(night_id: int, auth = Header()):
     sleep = await client_get_sleep_from_night(night_id, auth)
     s_segments = await client_get_sleep_segments_from_sleep(sleep.id, auth)
     sleep.sleep_segments = s_segments
-    
-    print(f"sleep: {sleep}")
     
     if not sleep:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "sleep not found")

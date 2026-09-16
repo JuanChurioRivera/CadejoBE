@@ -10,7 +10,7 @@ class NightEventBase(BaseModel):
  
 class NightEventCreate(BaseModel):
     """Fields required to insert a new NightEvent   row."""
-    night_id: int
+    night_id: int | None = None
     event_id: int
  
  

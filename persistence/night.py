@@ -62,11 +62,10 @@ async def get_events_from_user(sb_token:str):
         events = await (
             client.table(Tables.EVENT)
             .select("*")
-            .eq('by_user_id',get_user_id_from_token(sb_token))
-            .eq('custom',False)
+            .or_(f"custom.eq.false,by_user_id.eq.{get_user_id_from_token(sb_token)}")
             .execute()
-        ) 
-    
+        )
+            
         return [Event.model_validate(row) for row in events.data]
 
     except Exception:
@@ -76,28 +75,41 @@ async def associate_event_to_night(night_event: NightEventCreate, sb_token: str)
     client = await SupabaseClient().auth_client(sb_token)
     
     try:
+        
         events = await (
             client.table(Tables.EVENT)
             .select("*")
-            .eq('by_user_id',get_user_id_from_token(sb_token))
-            .eq('custom',False)
+            .or_(f"custom.eq.false,by_user_id.eq.{get_user_id_from_token(sb_token)}")
             .execute()
         )
-        
-        possible_events = [Event.model_validate(row).id for row in events.data] 
+         
+        possible_events = [Event.model_validate(row).id for row in events.data]
         
         if night_event.event_id not in possible_events:
             raise RuntimeError("Event does not belong to user")
         
-        night = await (
+        night = Night.model_validate(
+            (await (
             client.table(Tables.NIGHT)
             .select("*")
-            .eq('user_id',get_user_id_from_token(sb_token))
+            .eq('id',night_event.night_id)
             .execute()
+            )).data[0]
         )
         
-        if night_event.night_id != Night(**night.data[0]).id:
+        if night_event.night_id != night.id:
             raise RuntimeError("Night does not belong to user")
+        
+        events_for_that_night = (await (
+            client.table(Tables.NIGHT_EVENT)
+            .select("*")
+            .eq('night_id',night_event.night_id)
+            .eq('event_id',night_event.event_id)
+            .execute()
+        )).data
+        
+        if events_for_that_night:
+            raise RuntimeError("Event already associated to night")
             
         res = await (
             client.table(Tables.NIGHT_EVENT)
@@ -105,7 +117,7 @@ async def associate_event_to_night(night_event: NightEventCreate, sb_token: str)
             .execute()
         )
         
-        return NightEvent(**res.data[0])
+        return NightEvent.model_validate(res.data[0])
     except Exception:
         raise
     
@@ -119,10 +131,12 @@ async def get_events_from_night(night_id: int, sb_token: str):
             .eq('night_id',night_id)
             .execute()
         )
+        events = [
+            Event.model_validate(row['Event']) for row in res.data
+        ] 
+
+        return events
         
-        print(f"res.data: {res.data}")
-        
-        return True 
     except Exception:
         raise
     
