@@ -4,6 +4,7 @@ from models import (
     NightCreate,
     EventCreate,
     NightEventCreate,
+    SleepEvent,
     )
 from persistence import (
     get_user as client_get_user,
@@ -17,6 +18,7 @@ from persistence import (
     get_events_from_night as client_get_events_from_night,
     get_sleep_from_night as client_get_sleep_from_night,
     get_sleep_segments_from_sleep as client_get_sleep_segments_from_sleep,
+    process_sleep
 )
 router = APIRouter(prefix="/user")
 
@@ -130,4 +132,15 @@ async def get_sleep_from_night(night_id: int, auth = Header()):
     
     return sleep
 
+@router.post('/nights/{night_id}/sleep', status_code=status.HTTP_201_CREATED)
+async def record_sleep(night_id: int, sleep_events: list[SleepEvent] ,auth = Header()):
+    
+    user = await client_get_user(auth)
+    
+    if not user:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "user not found")
+    
+    await process_sleep(sleep_events)
+    
+    return status.HTTP_200_OK
     

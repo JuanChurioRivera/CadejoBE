@@ -4,6 +4,7 @@ from .sleep_segment import SleepSegment, SleepSegmentBase, SleepSegmentCreate
 from .sleep import Sleep, SleepBase, SleepCreate
 from .night import Night, NightBase, NightCreate
 from .user_preferences import User, UserBase, UserCreate
+from .sleep_events import SleepEvent
 
 __all__ = [
     "Event",
@@ -23,5 +24,6 @@ __all__ = [
     "NightCreate",
     "User",
     "UserBase",
-    "UserCreate"
+    "UserCreate",
+    "SleepEvent",
     ] 

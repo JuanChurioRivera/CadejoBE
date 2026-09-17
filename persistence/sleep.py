@@ -1,14 +1,19 @@
-from services import SupabaseClient
+from services import (
+    SupabaseClient,
+    smooth_signal,
+)
 from models import (
     Sleep,
     SleepBase,
     SleepCreate,
     SleepSegment,
     SleepSegmentCreate,
-    SleepSegmentBase
+    SleepSegmentBase,
+    SleepEvent,
 )
-
+import numpy as np
 from core.enums import Tables
+
 
 async def get_sleep_from_night(night_id: int, sb_token: str):
     client = await SupabaseClient().auth_client(sb_token)
@@ -63,4 +68,17 @@ async def create_sleep_segments(s_segments: list[SleepSegmentCreate], sb_token: 
         return SleepSegmentBase(**res.data[0])
     except Exception:
         raise
+    
+async def process_sleep(sleep_events: list[SleepEvent]):
+    
+    print(f"sleep events: {sleep_events}")
+    magnitude = [
+        ((instant.x**2) + (instant.y**2) + (instant.z**2)) / 3
+        for instant in sleep_events
+    ]
+    timestamps = [event.timestamp for event in sleep_events]
+    
+    print(f"magnitude: {magnitude}")
+    
+    smooth_signal(magnitude,timestamps)
     

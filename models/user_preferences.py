@@ -9,6 +9,7 @@ class UserBase(BaseModel):
     dob: date | None = None
     role: UserRole | None = None
     nocturne: bool | None = None
+    ideal_hours_of_sleep: int | None = None
     
 
 
